@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'home_page.dart';
-import 'register.dart'; // Import register.dart
 
 void main() {
   runApp(MyApp());
@@ -12,35 +11,37 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginPage(),
+      home: RegisterPage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isObscure = true;
   bool _isLoading = false;
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.11/revisian/lib/Api/login.php'),
+        Uri.parse('http://192.168.1.11/revisian/lib/Api/register.php'),
         headers: <String, String>{
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: {
+          'name': _nameController.text,
           'email': _emailController.text,
           'password': _passwordController.text,
         },
@@ -97,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Login',
+                'Register',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -105,6 +106,20 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(height: 40),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  hintText: 'Name',
+                  prefixIcon: Icon(Icons.person),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -147,8 +162,8 @@ class _LoginPageState extends State<LoginPage> {
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: _login,
-                      child: Text('Login'),
+                      onPressed: _register,
+                      child: Text('Register'),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 15, horizontal: 80),
                         shape: RoundedRectangleBorder(
@@ -159,19 +174,6 @@ class _LoginPageState extends State<LoginPage> {
                         textStyle: TextStyle(fontSize: 16),
                       ),
                     ),
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RegisterPage()),
-                  );
-                },
-                child: Text(
-                  'Don\'t have an account? Register',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
             ],
           ),
         ),
